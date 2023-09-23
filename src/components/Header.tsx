@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import MainContainer from "./MainContainer";
 
 type HeaderProps = {
   title: string;
@@ -8,16 +9,7 @@ type HeaderProps = {
 
 const Header = (props: HeaderProps) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "16px",
-        backgroundColor: "#2196f3",
-        color: "white",
-      }}
-    >
+    <MainContainer>
       <Typography variant="h4">{props.title}</Typography>
       <div>
         <Typography variant="subtitle1">
@@ -25,7 +17,7 @@ const Header = (props: HeaderProps) => {
         </Typography>
         <Typography variant="subtitle1">Tasks: {props.totalTasks}</Typography>
       </div>
-    </div>
+    </MainContainer>
   );
 };
 

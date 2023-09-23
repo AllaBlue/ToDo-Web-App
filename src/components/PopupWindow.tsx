@@ -40,23 +40,26 @@ const PopupWindow = (props: PopupWindowProps) => {
       title: listName,
       tasks: [],
       id: props.listId,
-      deleteFlag: false,
+      // deleteFlag: false,
     };
 
     props.onClick(newList.id, newList);
   };
+
   const addTask = () => {
     const newTask = {
       title: taskName,
       id: props.taskId,
-      deleteFlag: false,
+      // deleteFlag: false,
     };
 
     props.onClick(props.listId, newTask);
   };
+
   const deleteList = () => {
     props.onClick(props.listId, "");
   };
+
   const deleteTask = () => {
     props.onClick(props.listId, props.taskId);
   };

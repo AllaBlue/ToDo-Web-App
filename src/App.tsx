@@ -3,45 +3,39 @@ import "./App.css";
 import Header from "./components/Header";
 import PopupWindow from "./components/PopupWindow";
 import TaskList from "./components/TaskList";
-import {
-  // TaskListContext,
-  TaskListContextType,
-  TaskType,
-} from "./TaskListContext";
+import { TaskListContextType, TaskType } from "./TaskListContext";
 import { Box, Card, CardContent } from "@mui/material";
+import SearchArea from "./components/SearchArea";
 
 const tasklist = [
   {
     title: "Humber",
     tasks: [
-      { title: "Task 1", id: 1, deleteFlag: false },
-      { title: "Task 2", id: 2, deleteFlag: false },
-      { title: "Task 3", id: 3, deleteFlag: false },
+      { title: "Task 1", id: 1 },
+      { title: "Task 2", id: 2 },
+      { title: "Task 3", id: 3 },
     ],
     id: 1,
-    deleteFlag: false,
   },
 
   {
     title: "MERN",
     tasks: [
-      { title: "Lab", id: 1, deleteFlag: false },
-      { title: "Project", id: 2, deleteFlag: false },
-      { title: "Quiz", id: 3, deleteFlag: false },
+      { title: "Lab", id: 1 },
+      { title: "Project", id: 2 },
+      { title: "Quiz", id: 3 },
     ],
     id: 2,
-    deleteFlag: false,
   },
 
   {
     title: "Java",
     tasks: [
-      { title: "Group Discussion", id: 1, deleteFlag: false },
-      { title: "Exam", id: 2, deleteFlag: false },
-      { title: "Assignment", id: 3, deleteFlag: false },
+      { title: "Group Discussion", id: 1 },
+      { title: "Exam", id: 2 },
+      { title: "Assignment", id: 3 },
     ],
     id: 3,
-    deleteFlag: false,
   },
 ];
 
@@ -49,110 +43,99 @@ function App() {
   const [taskListState, setTaskListState] =
     useState<TaskListContextType[]>(tasklist);
 
-  const getOriginalList = (listId: number) => {
-    return taskListState.find((list) => list.id === listId);
-  };
+  const [filteredLists, setFilteredLists] =
+    useState<TaskListContextType[]>(taskListState);
 
   const handleTaskDeletion = (listId: number, taskId: number) => {
-    const updatedTaskListState = [...taskListState];
+    const listToUpdate = taskListState.find((list) => list.id === listId);
 
-    const listToUpdate = updatedTaskListState.find(
-      (list) => list.id === listId
-    );
-    const taskIndex = listToUpdate?.tasks.findIndex(
-      (task) => task.id === taskId
-    );
+    if (listToUpdate) {
+      const updatedList = {
+        ...listToUpdate,
+        tasks: listToUpdate.tasks.filter((task) => task.id !== taskId),
+      };
 
-    if (listToUpdate && taskIndex !== -1 && taskIndex != undefined) {
-      listToUpdate.tasks[taskIndex].deleteFlag = true;
+      setTaskListState(
+        [
+          ...taskListState.filter((list) => list.id !== listId),
+          updatedList,
+        ].sort((a, b) => a.id - b.id)
+      );
 
-      setTaskListState(updatedTaskListState);
-
-      console.log(`from handleTaskDeletion`);
-      console.log(updatedTaskListState);
+      setFilteredLists(
+        [
+          ...filteredLists.filter((list) => list.id !== listId),
+          updatedList,
+        ].sort((a, b) => a.id - b.id)
+      );
     }
   };
 
   const handleListDeletion = (id: number, anything: any) => {
-    const updatedTaskListState = [...taskListState];
-    console.log(anything);
-
-    const listToDelete = updatedTaskListState.find((list) => list.id === id);
-
-    if (listToDelete) {
-      const deletedList = {
-        ...listToDelete,
-        deleteFlag: true,
-      };
-
-      const listIndex = updatedTaskListState.indexOf(listToDelete);
-
-      updatedTaskListState[listIndex] = deletedList;
-
-      setTaskListState(updatedTaskListState);
-    }
-
-    console.log(`listId to Delete -> ${id}`);
-    console.log(`taskListState after Delete`);
-    console.log(taskListState);
+    setTaskListState(taskListState.filter((list) => list.id !== id));
+    setFilteredLists(filteredLists.filter((list) => list.id !== id));
   };
 
   const handleListAddition = (id: number, newList: TaskListContextType) => {
-    console.log(`newList ->`);
-    console.log(newList);
-
-    console.log(`id -> ${id}`);
-
     setTaskListState((prevTaskListState) => {
       const updatedTaskListState = [...prevTaskListState, newList];
       return updatedTaskListState;
     });
 
-    console.log(`updated taskliststate ->`);
-    console.log(taskListState);
+    setFilteredLists((prevFilteredLists) => {
+      const updatedTaskListState = [...prevFilteredLists, newList];
+      return updatedTaskListState;
+    });
   };
 
-  const handleTaskAddition = (id: number, newTask: TaskType) => {
-    const updatedTaskListState = [...taskListState];
-
-    const listToUpdate = updatedTaskListState.find((list) => list.id === id);
-
+  const handleTaskAddition = (listId: number, newTask: TaskType) => {
+    const listToUpdate = taskListState.find((list) => list.id === listId);
     if (listToUpdate) {
       const updatedList = {
         ...listToUpdate,
         tasks: [...listToUpdate.tasks, newTask],
       };
 
-      const listIndex = updatedTaskListState.indexOf(listToUpdate);
+      setTaskListState(
+        [
+          ...taskListState.filter((list) => list.id !== listId),
+          updatedList,
+        ].sort((a, b) => a.id - b.id)
+      );
 
-      updatedTaskListState[listIndex] = updatedList;
-
-      setTaskListState(updatedTaskListState);
-
-      console.log(`from handleTaskAddition`);
-      console.log(updatedTaskListState);
+      setFilteredLists(
+        [
+          ...filteredLists.filter((list) => list.id !== listId),
+          updatedList,
+        ].sort((a, b) => a.id - b.id)
+      );
     }
   };
 
-  const filteredTaskListState = taskListState
-    .filter((list) => !list.deleteFlag)
-    .map((list) => ({
-      ...list,
-      tasks: list.tasks.filter((task) => !task.deleteFlag),
-    }));
+  const handleSearchListsByCategory = (searchText: string) => {
+    if (searchText === "") {
+      setFilteredLists(taskListState);
+    } else {
+      setFilteredLists(
+        taskListState.filter(
+          (list) => list.title.toLowerCase() === searchText.toLowerCase()
+        )
+      );
+    }
+  };
 
   return (
     <>
-      {/* <TaskListContext.Provider value={filteredTaskListState}> */}
       <Header
         title={"Tasks Lists"}
-        totalTaskLists={filteredTaskListState.length}
-        totalTasks={filteredTaskListState
+        totalTaskLists={taskListState.length}
+        totalTasks={taskListState
           .map((list) => list.tasks.length)
-          .reduce((acc, currentValue) => acc + currentValue)}
+          .reduce((acc, currentValue) => acc + currentValue, 0)}
       />
+      <SearchArea onClick={handleSearchListsByCategory} />
       <Box mt={4} className="cardContainer">
-        {filteredTaskListState.map((l) => (
+        {filteredLists.map((l) => (
           <Card key={l.id} style={{ position: "relative" }} className="card">
             <CardContent>
               <TaskList
@@ -165,7 +148,7 @@ function App() {
                 title="Add Task"
                 action="add task"
                 listId={l.id}
-                taskId={generateTaskId(getOriginalList(l.id))}
+                taskId={generateTaskId(l)}
                 onClick={handleTaskAddition}
               />
             </CardContent>
@@ -194,7 +177,6 @@ function App() {
           </CardContent>
         </Card>
       </Box>
-      {/* </TaskListContext.Provider> */}
     </>
   );
 }
