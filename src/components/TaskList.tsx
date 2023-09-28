@@ -6,14 +6,13 @@ import {
   Divider,
 } from "@mui/material";
 
-import { TaskType } from "../TaskListContext";
+import { TaskType } from "../context/TaskListContext";
 import PopupWindow from "./PopupWindow";
 
 type TaskListProps = {
   title: string;
   tasks: TaskType[];
   id: number;
-  onClick: (listId: number, taskId: number) => void;
 };
 
 const TaskList = (props: TaskListProps) => {
@@ -38,7 +37,6 @@ const TaskList = (props: TaskListProps) => {
               action="delete task"
               listId={props.id}
               taskId={task.id}
-              onClick={props.onClick}
             />
           </ListItem>
         ))}

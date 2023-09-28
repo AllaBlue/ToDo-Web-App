@@ -7,61 +7,38 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import {
+  TaskListContext,
+  TaskListContextType,
+} from "../context/TaskListContext";
 
 type PopupWindowProps = {
   title: string;
   action: string;
   listId: number;
-  taskId: number | undefined;
-  onClick: (id: number, taskOrList: any) => void;
+  taskId: number;
 };
 
 const PopupWindow = (props: PopupWindowProps) => {
   const [open, setOpen] = useState(false);
   const [listName, setListName] = useState("");
   const [taskName, setTaskName] = useState("");
+  const { addList, removeList, addTask, removeTask } = useContext(
+    TaskListContext
+  ) as TaskListContextType;
 
   const handleAction = () => {
     setOpen(false);
     if (props.action == "add list") {
-      addList();
+      addList(listName);
     } else if (props.action == "add task") {
-      addTask();
+      addTask(props.listId, taskName);
     } else if (props.action == "delete list") {
-      deleteList();
+      removeList(props.listId);
     } else if (props.action == "delete task") {
-      deleteTask();
+      removeTask(props.listId, props.taskId);
     }
-  };
-
-  const addList = () => {
-    const newList = {
-      title: listName,
-      tasks: [],
-      id: props.listId,
-      // deleteFlag: false,
-    };
-
-    props.onClick(newList.id, newList);
-  };
-
-  const addTask = () => {
-    const newTask = {
-      title: taskName,
-      id: props.taskId,
-      // deleteFlag: false,
-    };
-
-    props.onClick(props.listId, newTask);
-  };
-
-  const deleteList = () => {
-    props.onClick(props.listId, "");
-  };
-
-  const deleteTask = () => {
-    props.onClick(props.listId, props.taskId);
   };
 
   const handleOpen = () => {

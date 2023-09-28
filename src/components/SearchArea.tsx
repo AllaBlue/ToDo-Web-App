@@ -1,13 +1,14 @@
 import { Box, Button, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import {
+  TaskListContext,
+  TaskListContextType,
+} from "../context/TaskListContext";
 
-type SearchAreaProps = {
-  onClick: (searchText: string) => void;
-};
-
-const SearchArea = ({ onClick }: SearchAreaProps) => {
+const SearchArea = () => {
   const [searchText, setSearchText] = useState("");
+  const { filterByName } = useContext(TaskListContext) as TaskListContextType;
 
   const handleSearchTextChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -16,7 +17,7 @@ const SearchArea = ({ onClick }: SearchAreaProps) => {
   };
 
   const handleClick = () => {
-    onClick(searchText);
+    filterByName(searchText);
   };
 
   return (
